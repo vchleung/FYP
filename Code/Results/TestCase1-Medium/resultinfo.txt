@@ -1,0 +1,7 @@
+Test Case 1 
+
+                 Fs=16000                                                     Source 1                                                     Source 2 
+      Directivity(Gender)                                                 femalespeech                                                   malespeech 
+                    Index                                                          241                                                          653 
+                     File              ../Data/ABC sentences/female/16kHz/abcf0901.dbl                ../Data/ABC sentences/male/16kHz/abcm2223.dbl 
+                  DRR(dB)                                                         5.06                                                        -3.96 

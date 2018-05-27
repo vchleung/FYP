@@ -1,0 +1,102 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\vieww17780\viewh17580\viewkind0
+\deftab720
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardeftab720\qj
+
+\f0\fs24 \cf0 ----------------------------------------------
+\b \
+MCRoomSim - Getting Started
+\b0 \
+----------------------------------------------\
+\
+MCRoomSim is a multichannel shoebox room acoustics simulator. It operates as an extension function to MATLAB (mex).\
+Please refer to the help contained in 
+\i MCRoomSim.m
+\i0  for info about the simulator.\
+\
+Windows users may require to install Microsoft Visual C++ Redistributable Package prior to running. \
+This package is available for download from the Microsoft website.\
+\
+To configure the simulator use the suite of high level functions:\
+	- 
+\i AddSource.m
+\i0 : 		Creates and configures a new source to add to the simulation.\
+	- 
+\i AddReceiver.m
+\i0 : 		Creates and configures a new receiver to add to the simulation.\
+	- 
+\i SetupRoom.m:
+\i0  		Configures room properties (size, absorption, diffusion, etc.).\
+	- 
+\i MCRoomSimOptions.m
+\i0 :	Configures general parameters.\
+	- 
+\i RunMCRoomSim.m
+\i0 :	Takes the outputs of the above four functions, combines them into an input structure that\
+						MCRoomSim accepts and then runs MCRoomSim.\
+\
+Auxiliary functions are also provided:\
+- 
+\i AirAbsorption.m
+\i0 :					Compute ISO standard frequency dependent air absorption values.\
+- 
+\i BandPassFilter.m
+\i0 :					Filter signals into octave or third-octave bands.\
+- 
+\i Clap:
+\i0                                                                Convolve impulse responses with a clap sound and play it back. 	\
+- 
+\i EarlyDecayTime.m
+\i0 :				         Calculate the Early Decay Times from a set of impulse responses.\
+- 
+\i EyringKuttruffReverberationTime.m
+\i0 :	Calculate the reverberation time of the room described by the 'Room' configuration \
+								structure using the Eyring-Kuttruff formula.\
+- 
+\i FitzroyKuttruffReverberationTime.m
+\i0 :	Calculate the reverberation time of the room described by the 'Room' configuration \
+								structure using the Fitzroy-Kuttruff formula. This formula is supposed to give slightly \
+								better results than the Eyring formula when the wall absorptions are uneven (e.g. \
+								more absorbant floor and ceiling).\
+- 
+\i GenSHIndices.m
+\i0 :					Generate a 2 column vector that show the mapping of source/receiver channels to\
+								spherical harmonic components, as used in MCRoomSim.\
+- 
+\i MusicalClarity
+\i0 :					Calculate the Musical Clarity Index (C80) from a set of impulse responses.\
+- 
+\i PlotSimSetup.m
+\i0 :
+\i 					
+\i0 Plots a 3D room with the source and receiver positions as well as indicating their\
+								orientation.\
+- 
+\i ReverberationTime
+\i0 :				Calculate the reverberation times (T30) from a set of impulse responses.\
+- 
+\i SchroederCurve
+\i0 :					Calculate the Schroeder curves from a set of impulse responses.\
+- 
+\i SpeechClarity
+\i0 :					Calculate the Speech Clarity Index (C50) from a set of impulse responses.	\
+\
+\
+Refer to the help contained in the relevant m-files.\
+\
+-------------------------------------------\
+
+\b Note:\
+
+\b0 -------------------------------------------\
+\
+If you use this software as part of your research, please cite my paper:\
+\
+"Room acoustics simulation for multichannel microphone arrays"\
+A. Wabnitz, N. Epain, C. Jin, and A. van Schaik\
+in Proceedings of the International Symposium on Room Acoustics\
+\pard\pardeftab720\ql\qnatural
+\cf0 Melbourne, Australia, August 2010\
+}
