@@ -8,7 +8,7 @@ clearvars
 numSrc = 2;
 numRec = 2;
 userInput = false;
-absorptionC = 1; %'default'/number in range of (0,1]
+absorptionC = 'default'; %'default'/number in range of (0,1]
 srcFilePath = ["../Data/IEEE sentences/male/16kHz/ieee02m01.dbl"; "../Data/IEEE sentences/female/16kHz/ieee01f08.dbl"] ;
 srcType = ["malespeech"; "femalespeech"];
 srcFileInd = [11; 8];
@@ -31,7 +31,7 @@ pltSchCur = false;
 
 %Specify the parameters for STFT Analysis
 OV=2;                                     % overlap factor of 2 (4 is also often used)
-INC=1024;                                 % set frame increment in samples
+INC=256;                                 % set frame increment in samples
 N_window=INC*OV;                          % DFT window length
 if OV==2
     W=sqrt(hamming(N_window,'periodic')); % OV=2
@@ -114,6 +114,15 @@ end
 y_sep=cellfun(@(h,x) filter(h,1,x),RIR_deci,repmat(x',2,1),'UniformOutput',false);
 
 %Plot Spectrogram to show the effect of reverberation
+% Break the signal down into frames and do STFT analysis
+F_sep=cellfun(@(S) rfft(enframe(S,W,INC),N_window,2),y_sep(1,:),'UniformOutput',false);      % do STFT: one row per time frame, +ve frequencies only
+% Spectrogram of Received Signal
+figure('pos',[150 300 900 300]);
+for i = 1:numRec
+    subplot(1,numSrc,i);
+    PlotSpectrogram(F_sep{i}.*conj(F_sep{i}),f,t,['Effect of Reverberation: Source ' num2str(i)],[-30 40]);
+end
+
 
 %Lastly sum all the sources w.r.t each receiver
 y_rec=cellfun(@(i,j) i+j,y_sep(:,1),y_sep(:,2),'UniformOutput',false);
