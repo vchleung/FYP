@@ -19,6 +19,11 @@ function mushram(varargin)
 
 %%%process input flags
 %default parameters
+global questions
+global currQuestion
+global resultfile
+global ratings
+
 phase=0;
 run_all=true;
 random_expe=true;
@@ -130,13 +135,21 @@ if phase,
 
     %%%opening the GUI for the evaluation phase
     %asking for the name of the results file
+    if currQuestion==1
+    ratings=zeros(nbexpe,nbfile,length(questions));
     [filename,pathname]=uiputfile('mushram_results.txt','Results file name');
     resultfile=[pathname filename];
+    end
     if ~resultfile,
         return;
     end
     
     %opening the GUI
+%     questions = {...
+%         'rate the quality in terms of preservation of the original signal in each test signal';...
+%         'rate the quality in terms of level of other sources in each test signal';...
+%         'rate the quality in terms of level of artifacts in each test signal';...
+%         'give a global quality rate for each test signal '};
     fig=evaluation_gui(nbfile,1,nbexpe);
     if ~fig,
         errordlg('There are too many test files to display. Try increasing the resolution of the screen.','Error');
@@ -149,9 +162,7 @@ if phase,
 
     %storing data within the GUI
     handles.expe=1;
-    handles.ratings=zeros(nbexpe,nbfile);
     handles.resultfile=resultfile;
-    
 else,
     
     %%%opening the GUI for the training phase

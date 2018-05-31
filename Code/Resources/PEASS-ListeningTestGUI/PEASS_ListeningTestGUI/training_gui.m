@@ -1,4 +1,6 @@
 function fig=training_gui(nbfile,nbexpe,run_all)
+global currQuestion
+global topics
 
 % TRAINING_GUI Creates the GUI for the training phase
 %
@@ -23,7 +25,7 @@ if iwidth < 9.2,
     return;
 end
 %figure width
-width=48+iwidth*(nbfile-1);
+width=48+iwidth*(nbfile-1)+24;
 %height of each item
 iheight=min(2.8,(maxheight-12.3)/nbexpe);
 if iheight < 2,
@@ -38,9 +40,10 @@ fig=figure('Name','MUSHRAM - Training phase','NumberTitle','off','MenuBar','none
 
 %%%displaying fixed items
 %titles
-uicontrol(fig,'Style','Text','Units','characters','Position',[0 9.3+nbexpe*iheight width 1.5],'FontSize',12,'String','Training','Tag','training');
-uicontrol(fig,'Style','Text','Units','characters','Position',[26.5 6.3+nbexpe*iheight 11 1],'FontSize',10,'String','Reference','Tag','reference');
-uicontrol(fig,'Style','Text','Units','characters','Position',[46.5 6.3+nbexpe*iheight width-49 1],'FontSize',10,'String','Test','Tag','test');
+uicontrol(fig,'Style','Text','Units','characters','Position',[0 9.3+nbexpe*iheight width 1.5],'FontSize',12,'String',['Training on ' topics{currQuestion}],'Tag','training');
+uicontrol(fig,'Style','Text','Units','characters','Position',[22.5 6.3+nbexpe*iheight 19 1],'FontSize',10,'String','Reference','Tag','reference');
+uicontrol(fig,'Style','Text','Units','characters','Position',[46.5 6.3+nbexpe*iheight 19 1],'FontSize',10,'String','Mixture','Tag','mixture');
+uicontrol(fig,'Style','Text','Units','characters','Position',[70.5 6.3+nbexpe*iheight (nbfile-1)*iwidth 1],'FontSize',10,'String','Test','Tag','test');
 %exit or proceed button
 proceed=uicontrol(fig,'Style','Pushbutton','Units','characters','FontSize',10,'Tag','proceed','Callback','training_callbacks(''proceed'',guidata(gcbo))');
 if run_all,
@@ -54,10 +57,12 @@ for e=1:nbexpe,
     %experiment number
     uicontrol(fig,'Style','Text','Units','characters','Position',[1.5 6.1+(nbexpe-e)*iheight 15.5 1],'FontSize',10,'String',['Experiment ' int2str(e)],'Tag',['title' int2str(e)]);
     %reference play buttons
-    uicontrol(fig,'Style','Pushbutton','Units','characters','Position',[22.5 5.7+(nbexpe-e)*iheight 19 1.8],'FontSize',10,'String','Play reference','Callback',['training_callbacks(''play'',guidata(gcbo),' int2str(e) ',0)'],'Tag',['play' int2str(e) '_0']);
+    uicontrol(fig,'Style','Pushbutton','Units','characters','Position',[22.5 5.7+(nbexpe-e)*iheight 19 1.8],'FontSize',10,'String','Play reference','Callback',['training_callbacks(''play'',guidata(gcbo),' int2str(e) ',0)'],'Tag',['play' int2str(e) '_0'],'BackgroundColor',[0.7 1 0.7]);
+    %mixture play buttons
+    uicontrol(fig,'Style','Pushbutton','Units','characters','Position',[46.5 5.7+(nbexpe-e)*iheight 19 1.8],'FontSize',10,'String','Play mixture','Callback',['training_callbacks(''play'',guidata(gcbo),' int2str(e) ',-1)'],'Tag',['play' int2str(e) '_0'],'BackgroundColor',[1 0.7 0.7]);
     for f=1:nbfile-1,
         %play buttons
-        uicontrol(fig,'Style','Pushbutton','Units','characters','Position',[46.5+(f-1)*iwidth 5.7+(nbexpe-e)*iheight 9 1.8],'FontSize',10,'String','Play','Callback',['training_callbacks(''play'',guidata(gcbo),' int2str(e) ',' int2str(f) ')'],'Tag',['play' int2str(e) '_' int2str(f)]);
+        uicontrol(fig,'Style','Pushbutton','Units','characters','Position',[70.5+(f-1)*iwidth 5.7+(nbexpe-e)*iheight 9 1.8],'FontSize',10,'String','Play','Callback',['training_callbacks(''play'',guidata(gcbo),' int2str(e) ',' int2str(f) ')'],'Tag',['play' int2str(e) '_' int2str(f)]);
     end
 end
 

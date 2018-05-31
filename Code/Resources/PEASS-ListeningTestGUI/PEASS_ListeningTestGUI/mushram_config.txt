@@ -1,0 +1,13 @@
+data/exp01_target.wav
+data/exp01_anchorArtif.wav
+data/exp01_anchorInterf.wav
+data/exp01_anchorDistTarget.wav
+data/exp01_test5.wav
+data/exp01_test6.wav
+
+data/exp02_target.wav
+data/exp02_anchorArtif.wav
+data/exp02_anchorInterf.wav
+data/exp02_anchorDistTarget.wav
+data/exp02_test5.wav
+data/exp02_test6.wav

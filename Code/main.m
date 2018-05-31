@@ -179,8 +179,8 @@ pause();
 sound(y{2},fs_output)
 
 %% Evaluation Metrics
-pesq_score_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
-pesq_score = pesq_mex_fast_vec(x{1},y{1}, fs_output, 'narrowband')
+pesq_score_nozoom = pesq_mex_fast_vec(y_sep{1,1},y_rec{1}, fs_output, 'narrowband')
+pesq_score = pesq_mex_fast_vec(y_sep{1,1},y{1}, fs_output, 'narrowband')
 
 
 %% Output all results and records to the outputFolder
