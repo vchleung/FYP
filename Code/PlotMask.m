@@ -7,8 +7,8 @@ axis tight;
 view(0,90);
 colormap(flipud(gray));
 colorbar;
-title(titleText,'Interpreter','latex')
-xlabel('Time (s)','Interpreter','latex')
-ylabel('Frequency (Hz)','Interpreter','latex')
+title(titleText)
+xlabel('Time (s)')
+ylabel('Frequency (Hz)')
 
 end

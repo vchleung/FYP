@@ -17,7 +17,8 @@ Fpower=F{1}.*conj(F{1});
 noiseSpect=estnoiseg(Fpower,INC/fs_output); % estimate the noise power spectrum
 signalSpect=Fpower-noiseSpect;
 signalSpect(signalSpect<0)=0;
-PlotSpectrogram(signalSpect./noiseSpect,f,t,'SNR Spectrogram');
+SNR = signalSpect./noiseSpect;
+PlotSpectrogram(SNR,f,t,'SNR Spectrogram');
 
 %Find the DOA of the signals
 dmax = norm(Receivers(1).Location-Receivers(2).Location);
@@ -34,6 +35,10 @@ DOA(imag(DOA)~=0)=NaN;
 DOA = real(DOA);
 figure;
 histogram(DOA,60,'Normalization','probability'); %Histogram for DOAs
+grid on;
+xlabel('DOA (deg)');
+ylabel('Probability');
+
 
 %% Clustering algorithm
 switch lower(clusterMethod)
@@ -46,6 +51,14 @@ switch lower(clusterMethod)
         Mask_2 = double(phaseDiff>=0);
         Mask_2(Mask_2==0)=attenuationRatio; %Attenuate the unwanted TF bins
 
+    case 'kmeans'
+        [U,centers] = kmeans(timeDiff_reshaped_norm,numSrc,'MaxIter',1000,'Replicates',10);
+        [~,index]= sort(centers,'ascend');
+        
+        %Fuzzy Mask
+        Mask_1 = reshape(double(U==index(1)),size(G12));
+        Mask_2 = reshape(double(U==index(2)),size(G12));
+        
     case 'fcm'
     %% Fuzzy c-means clustering
         options = [NaN 100 1e-10 1];
@@ -95,21 +108,15 @@ switch lower(clusterMethod)
                 w(i,j) = max(var(window),K);
             end
         end
+        w = max(SNR./max(max(SNR)),K);
         w = reshape(w,[],1);
         timeDiff_reshaped_norm = reshape(timeDiff_complex_norm,[],1);
         
         [centers,U] = wfcm(timeDiff_reshaped_norm,w,numSrc,options);
         
-        %Binary Mask
+        %Soft Mask
         [~,index]= sort(centers,'ascend');
         U = U(index,:);
-%         maxU = max(U);
-%         index1 = find(U(1,:) == maxU);
-%         index2 = find(U(2,:) == maxU);
-%         Mask_1 = zeros(size(G12));
-%         Mask_1(index1) = 1;
-%         Mask_2 = zeros(size(G12));
-%         Mask_2(index2) = 1;
         
         %Fuzzy Mask
         Mask_1 = reshape(U(1,:),size(G12));
@@ -177,7 +184,7 @@ switch lower(clusterMethod)
         
         [centers,U] = wcfcm(timeDiff_reshaped_norm,w,beta_best,C,numSrc,options);
         
-        %Binary Mask
+        %Soft Mask
         [~,index]= sort(centers,'ascend');
         U = U(index,:);
 %         maxU = max(U);
@@ -196,7 +203,7 @@ end
 %Plot the masks
 t = (1:size(G12,1))/fs_output*INC;
 f = (0:size(G12,2)-1)/(size(G12,2)-1)*fs_output/2;
-figure;
+figure('pos',[150 300 900 300]);
 subplot(1,numSrc,1);
 PlotMask(Mask_1.',f,t,'Mask for Source 1');
 subplot(1,numSrc,2);

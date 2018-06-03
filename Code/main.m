@@ -1,7 +1,7 @@
 % Main Script for "Audio Signal Zoom for Small Microphone Arrays"
 % By Chi Hang Leung (chl214), Supervised by Dr. Patrick Naylor, 2017/18
 
-close all
+% close all
 clearvars
 
 %Choose the input database for sources of anechoic speech
@@ -19,14 +19,14 @@ if userInput == true
 end
 
 %Choose the test cases to implement
-testCase = 2;
-roomSize = 'Large';        
+testCase = 1;
+roomSize = 'small';        
 
 %Choose which figures to be displayed
-pltImpRes = false;
+pltImpRes = true;
 pltImpResParams = struct('Receiver',[],'Source',[]);
 plt3D = true;
-pltT30 = true;
+pltRT60 = true;
 pltSchCur = false;
 
 %Specify the parameters for STFT Analysis
@@ -41,12 +41,9 @@ end
 W=W/sqrt(sum(W(1:INC:N_window).^2));      % normalize window
 
 %Choose which method to implement:
-%1. naive
-%2. FCM
-%3. wFCM
-%4. wcFCM
+%'naive'/'kmeans'/'FCM'/'wFCM'/'wcFCM'
 method = 'cluster';
-clusterMethod = 'wfcm';
+clusterMethod = 'wFCM';
 
 %% Simulate Room Impulse Response (RIR)
 %Define simulation parameters
@@ -68,7 +65,7 @@ Options = MCRoomSimOptions('Fs',fs_room, ...
 %Plot a 3-D map for the display of source and receivers
 if plt3D
     PlotSimSetup(Sources,Receivers,Room);
-    title(sprintf('Receivers and Sources Location for Test Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')),'Interpreter', 'latex')
+    title(sprintf('Test Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')))
     view(2);
     print([outputFilePath,'\3DMap.png'],'-dpng');
 end
@@ -93,7 +90,7 @@ end
 [DRR,~] = cellfun(@(h) EstDRR(h, fs_output),RIR_deci);
 
 %Plot the Reverberation time of the first receiver and first source
-[T30,~] = ReverberationTime(cell2mat(RIR_orig(1,1)),fs_room,'oct',pltT30,pltSchCur);
+[T30,~] = ReverberationTime(cell2mat(RIR_deci(1,1)),fs_output,'oct',pltRT60,pltSchCur);
 
 %% Filter the RIR with source samples to generate .wav outputs
 %Obtain the source samples
@@ -179,8 +176,8 @@ pause();
 sound(y{2},fs_output)
 
 %% Evaluation Metrics
-pesq_score_nozoom = pesq_mex_fast_vec(y_sep{1,1},y_rec{1}, fs_output, 'narrowband')
-pesq_score = pesq_mex_fast_vec(y_sep{1,1},y{1}, fs_output, 'narrowband')
+pesq_score_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
+pesq_score = pesq_mex_fast_vec(x{1},y{1}, fs_output, 'narrowband')
 
 
 %% Output all results and records to the outputFolder

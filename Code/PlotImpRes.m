@@ -26,9 +26,9 @@ for i = plotImpResParams.Receiver
         t = 0:1/fsamp:(length(cell2mat(RIR(i,j)))-1)/fsamp;
         subplot(numReceivers,numSources,count);
         cellfun(@(x) plot(t,x),RIR(i,j));
-        title(sprintf('Room Impulse Response of Source %d at Receiver %d', j, i),'Interpreter', 'latex')
-        xlabel('Time (s)', 'Interpreter', 'latex');
-        ylabel('Amplitude', 'Interpreter', 'latex');
+        title(sprintf('RIR of Source %d at Receiver %d', j, i))
+        xlabel('Time (s)');
+        ylabel('Amplitude');
         count = count + 1;
     end
 end
@@ -38,5 +38,5 @@ fig = gcf;
 fig.PaperUnits = 'points';
 fig.PaperPosition = [0 0 640 480];
 print([outputFilePath '\impRes.png'],'-dpng','-r0');
-
+print([outputFilePath '\impRes.eps'],'-depsc');
 end

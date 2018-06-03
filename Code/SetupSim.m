@@ -4,7 +4,7 @@ recSeparation = 0.04;
 
 switch lower(roomSize)
     case 'small'
-        roomDim = [3 4 2];
+        roomDim = [3 4 3];
     case 'medium'
         roomDim = [6 8 3];
     case 'large'
