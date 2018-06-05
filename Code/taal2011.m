@@ -1,184 +1,91 @@
-function d = taal2011(sigclean, sigproc, fs)
-%TAAL2011  The Short-time objective intelligibility measure (STOI)
-%   Usage: d = taal2011(sigclean, sigproc, fs);
-%
-%   d = stoi(sigclean, sigproc, fs) returns the output of the Short-Time
-%   Objective Intelligibility (STOI) measure described in Taal
-%   et. al. (2010) & (2011), where sigclean and sigproc denote the clean and
-%   processed speech, respectively, with sample rate fs measured in
-%   Hz. The output d is expected to have a monotonic relation with the
-%   subjective speech-intelligibility, where a higher d denotes better
-%   intelligible speech. See Taal et. al. (2010) & (2011) for more details.
-%
-%   The model consists of the following stages:
-%
-%   1) Removal of silent frames. Frames (of length 512) of the input
-%      signals that have an energy of 40 dB less than the most energetic
-%      frame are removed.
-%
-%   2) Expansion of the signals into a Fourier filterbank with a Hanning
-%      window length of 25ms and 256 channels covering the the frequency
-%      range from 0 to 5 kHz. The energy of the bands are then summed
-%      into third-octaves
-%
-%   3) The output d is computed by a correlation process. See the
-%      referenced papers for more details.
-%
-%   Examples:
-%   ---------
-%
-%   The following example shows a simple comparison between the
-%   intelligibility of a noisy speech signal and the same signal after
-%   noise reduction using a simple soft thresholding (spectral
-%   subtraction):
-%  
-%     % Get a clean and noisy test signal
-%     [f,fs]=cocktailparty;
-%     Ls=length(f);
-%     f_noisy=f+0.05*pinknoise(Ls,1,'rms');
-%
-%     % Simple spectral subtraction to remove the noise
-%     a=128; M=256; g=gabtight('hann',a,M);
-%     c_noise   = dgtreal(f,g,a,M);
-%     c_removed = thresh(c_noise,0.01);
-%     f_removed = idgtreal(c_removed,g,a,M);
-%     f_removed = f_removed(1:Ls);
-%
-%     % Compute the STOI of noisy vs. removed
-%     d_noisy   = taal2011(f, f_noisy, fs)
-%     d_removed = taal2011(f, f_removed, fs)
-%
-%   The original STOI model can be downloaded from
-%   http://msp.ewi.tudelft.nl/content/short-time-objective-intelligibility-measure
-%   This is a standalone version not depending on LTFAT and AMToolbox,
-%   and licensed under a different license, but the models are
-%   functionally equivalent.
+function d = taal2011(x, y, fs_signal)
+% The Short-Time Objective Intelligibility measure 
+%   d = stoi(x, y, fs_signal) returns the output of the short-time
+%   objective intelligibility (STOI) measure described in [1, 2], where x 
+%   and y denote the clean and processed speech, respectively, with sample
+%   rate fs_signal in Hz. The output d is expected to have a monotonic 
+%   relation with the subjective speech-intelligibility, where a higher d 
+%   denotes better intelligible speech. See [1, 2] for more details.
 %
 %   References:
-%     C. H. Taal, R. C. Hendriks, R. Heusdens, and J. Jensen. A Short-Time
-%     Objective Intelligibility Measure for Time-Frequency Weighted Noisy
-%     Speech. In Acoustics Speech and Signal Processing (ICASSP), pages
-%     4214-4217. IEEE, 2010.
-%     
-%     C. H. Taal, R. C. Hendriks, R. Heusdens, and J. Jensen. An Algorithm
-%     for Intelligibility Prediction of Time-Frequency Weighted Noisy Speech.
-%     IEEE Transactions on Audio, Speech and Language Processing,
-%     19(7):2125-2136, 2011.
-%     
+%      [1] C.H.Taal, R.C.Hendriks, R.Heusdens, J.Jensen 'A Short-Time
+%      Objective Intelligibility Measure for Time-Frequency Weighted Noisy
+%      Speech', ICASSP 2010, Texas, Dallas.
 %
-%   Url: http://amtoolbox.sourceforge.net/amt-0.9.5/doc/speech/taal2011.php
-
-% Copyright (C) 2009-2014 Peter L. Søndergaard.
-% This file is part of AMToolbox version 1.0.0
+%      [2] C.H.Taal, R.C.Hendriks, R.Heusdens, J.Jensen 'An Algorithm for 
+%      Intelligibility Prediction of Time-Frequency Weighted Noisy Speech', 
+%      IEEE Transactions on Audio, Speech, and Language Processing, 2011. 
 %
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
 %
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
+% Copyright 2009: Delft University of Technology, Signal & Information
+% Processing Lab. The software is free for non-commercial use. This program
+% comes WITHOUT ANY WARRANTY.
 %
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  
-  
-%% -------- Model parameters ---------------------------------
+%
+%
+% Updates:
+% 2011-04-26 Using the more efficient 'taa_corr' instead of 'corr'
 
-fs_model = 10000; % Sample rate of proposed intelligibility measure
-N_frame	= 256;    % Window support
-K = 512;          % FFT size
-J = 15;           % Number of 1/3 octave bands
-mn = 150;         % Center frequency of first 1/3 octave band in Hz.
-N = 30;           % Number of frames for intermediate intelligibility
-                  % measure (Length analysis window)
-Beta = -15;       % Lower SDR-bound
-dyn_range = 40;   % Speech dynamic range
-
-%% -------- Checking and initialization  ---------------------
-
-% constant for clipping procedure
-c           = 10^(-Beta/20);                            
-
-if length(sigclean)~=length(sigproc)
-    error('sigclean and sigproc should have the same length');
+if length(x)~=length(y)
+    error('x and y should have the same length');
 end
 
-% Number of signals
-W=size(sigclean,2);
+% initialization
+x           = x(:);                             % clean speech column vector
+y           = y(:);                             % processed speech column vector
 
-% Get 1/3 octave band matrix
-H = thirdoct(fs_model, K, J, mn);
+fs          = 10000;                            % sample rate of proposed intelligibility measure
+N_frame    	= 256;                              % window support
+K           = 512;                              % FFT size
+J           = 15;                               % Number of 1/3 octave bands
+mn          = 150;                              % Center frequency of first 1/3 octave band in Hz.
+H           = thirdoct(fs, K, J, mn);           % Get 1/3 octave band matrix
+N           = 30;                               % Number of frames for intermediate intelligibility measure (Length analysis window)
+Beta        = -15;                           	% lower SDR-bound
+dyn_range   = 40;                               % speech dynamic range
 
-% resample signals if other samplerate is used than fs_model The original
-% model used the "resample" function. However, this function not part of the
-% Matlab core functions and is not (at the time of writing) included in
-% Octave.
-if fs ~= fs_model
-  newlength= round(length(sigclean)/fs*fs_model);
-  sigclean = fftresample(sigclean, newlength);
-  sigproc  = fftresample(sigproc,  newlength);
+% resample signals if other samplerate is used than fs
+if fs_signal ~= fs
+    x	= resample(x, fs, fs_signal);
+    y 	= resample(y, fs, fs_signal);
 end
 
-% Loop over multi-signals
-d=zeros(1,W);
-for w=1:W
-  x=sigclean(:,w);
-  y=sigproc(:,w);
+% remove silent frames
+[x y] = removeSilentFrames(x, y, dyn_range, N_frame, N_frame/2);
 
-  %% -------- Compute TF representation
-  
-  % Remove silent frames. Below, the clean signal is now called "x" and the
-  % processed signal is called "y"
-  [x,y] = removeSilentFrames(x,y,dyn_range, N_frame, N_frame/2);
-  
-  % Compute sampled short-time Fourier transforms using LTFAT
-  x_hat=dgtreal(x,{'hann',N_frame},N_frame/2,K);
-  y_hat=dgtreal(y,{'hann',N_frame},N_frame/2,K);  
-  N_timesteps=size(x_hat, 2);
-  
-  % Collect the frequency bands into the 1/3 octave band TF-representation
-  % This is done through multiplication with a sparse matrix consisting of
-  % 0 and 1's
-  X = sqrt(H*abs(x_hat).^2);
-  Y = sqrt(H*abs(y_hat).^2);
-  
-  %% -------- Compute the intelligibility measure
-  
-  % loop al segments of length N and obtain intermediate intelligibility measure for all TF-regions
-  
-  % init memory for intermediate intelligibility measure
-  d_interm  	= zeros(J, length(N:size(X, 2)));
-    
-  for m = N:size(X, 2)
-    % regions with length N of clean and processed TF-units for all j
-    X_seg = X(:, (m-N+1):m);
-    Y_seg = Y(:, (m-N+1):m);
-    
-    % obtain scale factor for normalizing processed TF-region for all j
-    alpha   = sqrt(sum(X_seg.^2, 2)./sum(Y_seg.^2, 2));
-    
-    % obtain \alpha*Y_j(n) from Eq.(2) [1], pointwise mul with alpha
-    aY_seg 	= bsxfun(@times,Y_seg,alpha);
-    for jj = 1:J
-      % apply clipping from Eq.(3)   	
-      Y_prime             = min(aY_seg(jj, :), X_seg(jj, :)+X_seg(jj, :)*c);
-      
-      % obtain correlation coeffecient from Eq.(4) [1]
-      d_interm(jj, m-N+1)  = taa_corr(X_seg(jj, :).', Y_prime(:));
+% apply 1/3 octave band TF-decomposition
+x_hat     	= stdft(x, N_frame, N_frame/2, K); 	% apply short-time DFT to clean speech
+y_hat     	= stdft(y, N_frame, N_frame/2, K); 	% apply short-time DFT to processed speech
+
+x_hat       = x_hat(:, 1:(K/2+1)).';         	% take clean single-sided spectrum
+y_hat       = y_hat(:, 1:(K/2+1)).';        	% take processed single-sided spectrum
+
+X           = zeros(J, size(x_hat, 2));         % init memory for clean speech 1/3 octave band TF-representation 
+Y           = zeros(J, size(y_hat, 2));         % init memory for processed speech 1/3 octave band TF-representation 
+
+for i = 1:size(x_hat, 2)
+    X(:, i)	= sqrt(H*abs(x_hat(:, i)).^2);      % apply 1/3 octave bands as described in Eq.(1) [1]
+    Y(:, i)	= sqrt(H*abs(y_hat(:, i)).^2);
+end
+
+% loop al segments of length N and obtain intermediate intelligibility measure for all TF-regions
+d_interm  	= zeros(J, length(N:size(X, 2)));                               % init memory for intermediate intelligibility measure
+c           = 10^(-Beta/20);                                                % constant for clipping procedure
+
+for m = N:size(X, 2)
+    X_seg  	= X(:, (m-N+1):m);                                              % region with length N of clean TF-units for all j
+    Y_seg  	= Y(:, (m-N+1):m);                                              % region with length N of processed TF-units for all j
+    alpha   = sqrt(sum(X_seg.^2, 2)./sum(Y_seg.^2, 2));                     % obtain scale factor for normalizing processed TF-region for all j
+    aY_seg 	= Y_seg.*repmat(alpha, [1 N]);                               	% obtain \alpha*Y_j(n) from Eq.(2) [1]
+    for j = 1:J
+      	Y_prime             = min(aY_seg(j, :), X_seg(j, :)+X_seg(j, :)*c); % apply clipping from Eq.(3)   	
+        d_interm(j, m-N+1)  = taa_corr(X_seg(j, :).', Y_prime(:));          % obtain correlation coeffecient from Eq.(4) [1]
     end
-  end
-  
-  % combine all intermediate intelligibility measures as in Eq.(4) [1]
-  
-  d(w) = mean(d_interm(:));                              
-end;
+end
+        
+d = mean(d_interm(:));                                                      % combine all intermediate intelligibility measures as in Eq.(4) [1]
 
-%% ---------  Subfunctions -------------------------------
-
-
+%%
 function  [A cf] = thirdoct(fs, N_fft, numBands, mn)
 %   [A CF] = THIRDOCT(FS, N_FFT, NUMBANDS, MN) returns 1/3 octave band matrix
 %   inputs:
@@ -190,32 +97,48 @@ function  [A cf] = thirdoct(fs, N_fft, numBands, mn)
 %       A:          octave band matrix
 %       CF:         center frequencies
 
-f  = linspace(0, fs, N_fft+1);
-f  = f(1:(N_fft/2+1));
-k  = 0:(numBands-1); 
-cf = 2.^(k/3)*mn;
-fl = sqrt((2.^(k/3)*mn).*2.^((k-1)/3)*mn);
-fr = sqrt((2.^(k/3)*mn).*2.^((k+1)/3)*mn);
-%A  = spzeros(numBands, length(f));
-A  = sparse(numBands, length(f));
+f               = linspace(0, fs, N_fft+1);
+f               = f(1:(N_fft/2+1));
+k               = 0:(numBands-1); 
+cf              = 2.^(k/3)*mn;
+fl              = sqrt((2.^(k/3)*mn).*2.^((k-1)/3)*mn);
+fr              = sqrt((2.^(k/3)*mn).*2.^((k+1)/3)*mn);
+A               = zeros(numBands, length(f));
 
-for ii = 1:(length(cf))
-  [a b] = min((f-fl(ii)).^2);
-  fl(ii) = f(b);
-  fl_ii = b;
-  
-  [a b] = min((f-fr(ii)).^2);
-  fr(ii) = f(b);
-  fr_ii = b;
-  A(ii,fl_ii:(fr_ii-1))	= 1;
+for i = 1:(length(cf))
+    [a b]                   = min((f-fl(i)).^2);
+    fl(i)                   = f(b);
+    fl_ii                   = b;
+
+	[a b]                   = min((f-fr(i)).^2);
+    fr(i)                   = f(b);
+    fr_ii                   = b;
+    A(i,fl_ii:(fr_ii-1))	= 1;
 end
 
 rnk         = sum(A, 2);
-numBands = find((rnk(2:end)>=rnk(1:(end-1))) & (rnk(2:end)~=0)~=0, 1, 'last' )+1;
+numBands  	= find((rnk(2:end)>=rnk(1:(end-1))) & (rnk(2:end)~=0)~=0, 1, 'last' )+1;
 A           = A(1:numBands, :);
 cf          = cf(1:numBands);
 
 %%
+function x_stdft = stdft(x, N, K, N_fft)
+%   X_STDFT = X_STDFT(X, N, K, N_FFT) returns the short-time
+%	hanning-windowed dft of X with frame-size N, overlap K and DFT size
+%   N_FFT. The columns and rows of X_STDFT denote the frame-index and
+%   dft-bin index, respectively.
+
+frames      = 1:K:(length(x)-N);
+x_stdft     = zeros(length(frames), N_fft);
+
+w           = hanning(N);
+x           = x(:);
+
+for i = 1:length(frames)
+    ii              = frames(i):(frames(i)+N-1);
+	x_stdft(i, :) 	= fft(x(ii).*w, N_fft);
+end
+
 %%
 function [x_sil y_sil] = removeSilentFrames(x, y, range, N, K)
 %   [X_SIL Y_SIL] = REMOVESILENTFRAMES(X, Y, RANGE, N, K) X and Y
@@ -255,11 +178,12 @@ end
 x_sil = x_sil(1:jj_o(end));
 y_sil = y_sil(1:jj_o(end));
 
-
 %%
 function rho = taa_corr(x, y)
 %   RHO = TAA_CORR(X, Y) Returns correlation coeffecient between column
 %   vectors x and y. Gives same results as 'corr' from statistics toolbox.
 xn    	= x-mean(x);
+xn  	= xn/sqrt(sum(xn.^2));
 yn   	= y-mean(y);
-rho   	= dot(xn/norm(xn),yn/norm(yn));
+yn    	= yn/sqrt(sum(yn.^2));
+rho   	= sum(xn.*yn);

@@ -1,4 +1,4 @@
-function F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC)
+function F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC,desiredSpeaker)
 
 %% Developing Binary Mask
 %Find the Cross power spectral density for each time segment
@@ -108,7 +108,7 @@ switch lower(clusterMethod)
                 w(i,j) = max(var(window),K);
             end
         end
-        w = max(SNR./max(max(SNR)),K);
+        %w = max(SNR./max(max(SNR)),K);
         w = reshape(w,[],1);
         timeDiff_reshaped_norm = reshape(timeDiff_complex_norm,[],1);
         
@@ -203,11 +203,8 @@ end
 %Plot the masks
 t = (1:size(G12,1))/fs_output*INC;
 f = (0:size(G12,2)-1)/(size(G12,2)-1)*fs_output/2;
-figure('pos',[150 300 900 300]);
-subplot(1,numSrc,1);
-PlotMask(Mask_1.',f,t,'Mask for Source 1');
-subplot(1,numSrc,2);
-PlotMask(Mask_2.',f,t,'Mask for Source 2');
+figure('pos',[150 300 400 300]);
+PlotMask(Mask_1.',f,t,['Mask for Source ' num2str(desiredSpeaker)]);
 
 %Apply the mask and Put them back into a cell array
 F_output = {F{1}.*Mask_1;F{1}.*Mask_2};

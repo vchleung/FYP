@@ -37,6 +37,5 @@ end
 fig = gcf;
 fig.PaperUnits = 'points';
 fig.PaperPosition = [0 0 640 480];
-print([outputFilePath '\impRes.png'],'-dpng','-r0');
-print([outputFilePath '\impRes.eps'],'-depsc');
+export_fig([outputFilePath,'ir'],'-png','-eps','-p0.05','-transparent');
 end

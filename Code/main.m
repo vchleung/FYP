@@ -3,12 +3,13 @@
 
 % close all
 clearvars
+%addpath('Resources/export_fig')
 
 %Choose the input database for sources of anechoic speech
 numSrc = 2;
 numRec = 2;
 userInput = false;
-absorptionC = 'default'; %'default'/number in range of (0,1]
+absorptionC = 1; %'default'/number in range of (0,1]
 srcFilePath = ["../Data/IEEE sentences/male/16kHz/ieee02m01.dbl"; "../Data/IEEE sentences/female/16kHz/ieee01f08.dbl"] ;
 srcType = ["malespeech"; "femalespeech"];
 srcFileInd = [11; 8];
@@ -19,8 +20,10 @@ if userInput == true
 end
 
 %Choose the test cases to implement
-testCase = 1;
-roomSize = 'small';        
+testCase = 2;
+roomSize = 'Large';        
+outputFilePath = ['Results/TestCase' num2str(testCase) '-' roomSize '/' num2str(testCase) lower(roomSize(1)) '_']; %Specify the output file path
+desiredSpeaker = 1;
 
 %Choose which figures to be displayed
 pltImpRes = true;
@@ -43,7 +46,7 @@ W=W/sqrt(sum(W(1:INC:N_window).^2));      % normalize window
 %Choose which method to implement:
 %'naive'/'kmeans'/'FCM'/'wFCM'/'wcFCM'
 method = 'cluster';
-clusterMethod = 'wFCM';
+clusterMethod = 'naive';
 
 %% Simulate Room Impulse Response (RIR)
 %Define simulation parameters
@@ -52,7 +55,6 @@ fs_output = 16000;          % Sample frequency (samples/s) used in Output RIR
 tsim = 5;
 deciRatio = fs_room/fs_output;
 order = [-1, -1, -1];       % -1 equals maximum reflection order!
-outputFilePath = ['Results/TestCase' num2str(testCase) '-' roomSize '/']; %Specify the output file path
 
 %Set up MCRoomSim Options
 Options = MCRoomSimOptions('Fs',fs_room, ...
@@ -67,7 +69,8 @@ if plt3D
     PlotSimSetup(Sources,Receivers,Room);
     title(sprintf('Test Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')))
     view(2);
-    print([outputFilePath,'\3DMap.png'],'-dpng');
+    %print([outputFilePath,'\3DMap.png'],'-dpng');
+    export_fig([outputFilePath,'lo'],'-eps','-png')
 end
 
 %Run the Simulation and obtain the Room Impulse Response (RIR_orig)
@@ -91,6 +94,9 @@ end
 
 %Plot the Reverberation time of the first receiver and first source
 [T30,~] = ReverberationTime(cell2mat(RIR_deci(1,1)),fs_output,'oct',pltRT60,pltSchCur);
+if pltRT60
+    export_fig([outputFilePath,'rt60'],'-eps','-png')    
+end
 
 %% Filter the RIR with source samples to generate .wav outputs
 %Obtain the source samples
@@ -120,7 +126,6 @@ for i = 1:numRec
     PlotSpectrogram(F_sep{i}.*conj(F_sep{i}),f,t,['Effect of Reverberation: Source ' num2str(i)],[-30 40]);
 end
 
-
 %Lastly sum all the sources w.r.t each receiver
 y_rec=cellfun(@(i,j) i+j,y_sep(:,1),y_sep(:,2),'UniformOutput',false);
 
@@ -142,7 +147,7 @@ User_DOA = 90-atan2d(User_DOA(:,2),User_DOA(:,1));
 
 switch lower(method)
     case 'cluster'
-        F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC);
+        F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC,desiredSpeaker);
 end
 
 %% Recover the Signal using Inverse FFT and Overlap-add method
@@ -150,13 +155,10 @@ end
 y=cellfun(@(F) overlapadd(irfft(F,N_window,2),W,INC),F_output,'UniformOutput',false);  % reconstitute the time waveform
 
 % Spectrogram of Processed Signal
-figure('pos',[150 300 900 300]);
+figure('pos',[150 300 400 300]);
 t = (1:size(F_output{1},1))/fs_output*INC;
 f = (0:size(F_output{1},2)-1)/(size(F_output{1},2)-1)*fs_output/2;
-for i = 1:numSrc
-    subplot(1,numSrc,i);
-    PlotSpectrogram(F_output{i}.*conj(F_output{i}),f,t,['Spectrogram of Recovered Source ' num2str(i)],[-30 40]);
-end
+PlotSpectrogram(F_output{desiredSpeaker}.*conj(F_output{desiredSpeaker}),f,t,['Spectrogram of Recovered Source ' num2str(desiredSpeaker)],[-30 40]);
 
 %% Play the Signals 
 %First Source (Male)
@@ -171,14 +173,12 @@ sound(y_rec{1},fs_output)
 %Zoomed First Source (Male)
 pause();
 sound(y{1},fs_output)
-%Zoomed Second Source (Female)
-pause();
-sound(y{2},fs_output)
 
 %% Evaluation Metrics
-pesq_score_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
-pesq_score = pesq_mex_fast_vec(x{1},y{1}, fs_output, 'narrowband')
+pesq_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
+pesq = pesq_mex_fast_vec(x{1}(121:end),y{1}, fs_output, 'narrowband')
 
-
+stoi_nozoom = taal2011(x{1},y_rec{1}, fs_output)
+stoi = taal2011(x{1}(121:end),y{1}, fs_output)
 %% Output all results and records to the outputFolder
 OutputResult(outputFilePath,fs_output,srcFilePath,srcFileInd,srcType,DRR,testCase,x,y_rec,y);
