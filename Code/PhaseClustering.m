@@ -207,4 +207,8 @@ figure('pos',[150 300 400 300]);
 PlotMask(Mask_1.',f,t,['Mask for Source ' num2str(desiredSpeaker)]);
 
 %Apply the mask and Put them back into a cell array
-F_output = {F{1}.*Mask_1;F{1}.*Mask_2};
+if desiredSpeaker ==1
+    F_output = F{1}.*Mask_1;
+elseif desiredSpeaker == 2
+    F_output = F{1}.*Mask_2;
+end

@@ -56,9 +56,9 @@ if nargin == 3 && ~isempty(inParams)
     end
 end
 
-if isempty(params.hPreEQ)
-    warning('No pre-EQ provided.  Assumption that direct path is the largest peak is not reliable');
-end
+% if isempty(params.hPreEQ)
+%     warning('No pre-EQ provided.  Assumption that direct path is the largest peak is not reliable');
+% end
 
 % Return the actual values used for later verification
 extras.dirPlus                              = params.dirPlus;

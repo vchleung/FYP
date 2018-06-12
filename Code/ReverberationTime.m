@@ -122,9 +122,9 @@ if pltT30 == true
     figure('color','white')
     semilogx(frq,2*T30,'-o','linewidth',2)
     xlim([frq(1)*2^(-1/3) frq(end)*2^(1/3)])
-    title('Reverberation time (RT60)','Interpreter', 'latex') ;
-    xlabel('Frequency [Hz]','Interpreter', 'latex')
-    ylabel('RT60 [s]','Interpreter', 'latex')
+    title('Reverberation time (RT60)') ;
+    xlabel('Frequency [Hz]')
+    ylabel('RT60 [s]')
     set(gca,'YGrid','on')
     set(gca,'Xtick',[],'fontsize',14)
     switch lower(bndOpt)

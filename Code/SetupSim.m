@@ -1,6 +1,4 @@
-function [Receivers,Sources,Room]=SetupSim(testcase,roomSize,srcType,reverberation)
-
-recSeparation = 0.02;
+function [Receivers,Sources,Room]=SetupSim(testcase,roomSize,srcType,reverberation,recSeparation)
 
 switch lower(roomSize)
     case 'small'

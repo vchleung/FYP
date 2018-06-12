@@ -20,7 +20,7 @@ elseif nnz(plotImpResParams.Source>numSources)~=0 %warn user if input source is 
 end
 %Plot the impulse response for each receiver-source pair
 count = 1;
-figure;
+figure('units','normalized','outerposition',[0.25 0.25 0.6 0.65])
 for i = plotImpResParams.Receiver
     for j = plotImpResParams.Source
         t = 0:1/fsamp:(length(cell2mat(RIR(i,j)))-1)/fsamp;
@@ -34,8 +34,5 @@ for i = plotImpResParams.Receiver
 end
 
 %Save the Figure
-fig = gcf;
-fig.PaperUnits = 'points';
-fig.PaperPosition = [0 0 640 480];
-export_fig([outputFilePath,'ir'],'-png','-eps','-p0.05','-transparent');
+export_fig([outputFilePath,'ir'],'-png','-eps','-p0.05','-transparent','-m2');
 end

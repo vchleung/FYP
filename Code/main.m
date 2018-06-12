@@ -1,9 +1,10 @@
 % Main Script for "Audio Signal Zoom for Small Microphone Arrays"
 % By Chi Hang Leung (chl214), Supervised by Dr. Patrick Naylor, 2017/18
 
-% close all
+close all
 clearvars
 %addpath('Resources/export_fig')
+set(0,'defaultAxesFontSize',14) %Change the default axes size for figures
 
 %Choose the input database for sources of anechoic speech
 numSrc = 2;
@@ -24,6 +25,7 @@ testCase = 2;
 roomSize = 'Large';        
 outputFilePath = ['Results/TestCase' num2str(testCase) '-' roomSize '/' num2str(testCase) lower(roomSize(1)) '_']; %Specify the output file path
 desiredSpeaker = 1;
+recSeparation = 0.02;
 
 %Choose which figures to be displayed
 pltImpRes = true;
@@ -44,9 +46,9 @@ end
 W=W/sqrt(sum(W(1:INC:N_window).^2));      % normalize window
 
 %Choose which method to implement:
-%'naive'/'kmeans'/'FCM'/'wFCM'/'wcFCM'
-method = 'cluster';
-clusterMethod = 'naive';
+method = 'cluster'; %'cluster'/'beamforming'
+clusterMethod = 'wFCM'; %'naive'/'kmeans'/'FCM'/'wFCM'/'wcFCM'
+beamformingMethod = 'gsc_MATLAB'; %'delaysum'/'delaysum_MATLAB'/'gsc_MATLAB'
 
 %% Simulate Room Impulse Response (RIR)
 %Define simulation parameters
@@ -62,7 +64,7 @@ Options = MCRoomSimOptions('Fs',fs_room, ...
 );
 
 %Set up the simulation environment
-[Receivers,Sources,Room]=SetupSim(testCase,roomSize,srcType,absorptionC);
+[Receivers,Sources,Room]=SetupSim(testCase,roomSize,srcType,absorptionC,recSeparation);
 
 %Plot a 3-D map for the display of source and receivers
 if plt3D
@@ -70,7 +72,7 @@ if plt3D
     title(sprintf('Test Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')))
     view(2);
     %print([outputFilePath,'\3DMap.png'],'-dpng');
-    export_fig([outputFilePath,'lo'],'-eps','-png')
+    export_fig([outputFilePath,'lo'],'-eps','-png','-m2')
 end
 
 %Run the Simulation and obtain the Room Impulse Response (RIR_orig)
@@ -95,10 +97,12 @@ end
 %Plot the Reverberation time of the first receiver and first source
 [T30,~] = ReverberationTime(cell2mat(RIR_deci(1,1)),fs_output,'oct',pltRT60,pltSchCur);
 if pltRT60
-    export_fig([outputFilePath,'rt60'],'-eps','-png')    
+    export_fig([outputFilePath,'rt60'],'-eps','-png','-m2')    
 end
 
 %% Filter the RIR with source samples to generate .wav outputs
+set(0,'defaultAxesFontSize',11) %Change the default axes size for figures
+
 %Obtain the source samples
 x=cellfun(@DBLRead, srcFilePath,'UniformOutput',false);
 [x(1),x(2)]=cellfun(@(x,y) TrimSignals(x,y,tsim*fs_output),x(1),x(2),'UniformOutput',false);
@@ -143,22 +147,28 @@ end
 %% Choose Processing Algorithm 
 % Find the Direction of Arrival
 User_DOA = [Sources(1).Location - Receivers(1).Location; Sources(2).Location - Receivers(1).Location];
-User_DOA = 90-atan2d(User_DOA(:,2),User_DOA(:,1));
+User_DOA = atan2d(User_DOA(:,2),User_DOA(:,1))-90;
 
 switch lower(method)
     case 'cluster'
         F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC,desiredSpeaker);
+        % Overlap-add to recover each of the output signal
+        y = overlapadd(irfft(F_output,N_window,2),W,INC);  % reconstitute the time waveform
+        y = y';
+        
+    case 'beamforming'
+        y = Beamforming(y_rec,User_DOA(desiredSpeaker),Receivers,fs_output,beamformingMethod);
 end
 
-%% Recover the Signal using Inverse FFT and Overlap-add method
-% Overlap-add to recover each of the output signal
-y=cellfun(@(F) overlapadd(irfft(F,N_window,2),W,INC),F_output,'UniformOutput',false);  % reconstitute the time waveform
+%% Display the Spectrogram of the Zoomed Signal
+% Break the signal down into frames and do STFT analysis
+Y_output=rfft(enframe(y,W,INC),N_window,2);      % do STFT: one row per time frame, +ve frequencies only
 
 % Spectrogram of Processed Signal
 figure('pos',[150 300 400 300]);
-t = (1:size(F_output{1},1))/fs_output*INC;
-f = (0:size(F_output{1},2)-1)/(size(F_output{1},2)-1)*fs_output/2;
-PlotSpectrogram(F_output{desiredSpeaker}.*conj(F_output{desiredSpeaker}),f,t,['Spectrogram of Recovered Source ' num2str(desiredSpeaker)],[-30 40]);
+t = (1:size(Y_output,1))/fs_output*INC;
+f = (0:size(Y_output,2)-1)/(size(Y_output,2)-1)*fs_output/2;
+PlotSpectrogram(Y_output.*conj(Y_output),f,t,['Spectrogram of Recovered Source ' num2str(desiredSpeaker)],[-30 40]);
 
 %% Play the Signals 
 %First Source (Male)
@@ -167,18 +177,29 @@ sound(x{1},fs_output)
 %Second Source (Female)
 pause();
 sound(x{2},fs_output)
-%Mixed Source
+%Mixture of Sources
 pause();
 sound(y_rec{1},fs_output)
-%Zoomed First Source (Male)
+%Zoomed Signal
 pause();
-sound(y{1},fs_output)
+sound(y,fs_output)
 
 %% Evaluation Metrics
 pesq_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
-pesq = pesq_mex_fast_vec(x{1}(121:end),y{1}, fs_output, 'narrowband')
+pesq = pesq_mex_fast_vec(x{1},y, fs_output, 'narrowband')
 
 stoi_nozoom = taal2011(x{1},y_rec{1}, fs_output)
-stoi = taal2011(x{1}(121:end),y{1}, fs_output)
+stoi = taal2011(x{1}(1:length(y)),y,fs_output)
+
+[SDR_nozoom,SIR_nozoom,SAR_nozoom,perm]=bss_eval_sources(cell2mat(y_rec),cell2mat(x));
+% SDR_nozoom=SDR_nozoom(perm(desiredSpeaker))
+SIR_nozoom=SIR_nozoom(desiredSpeaker)
+% SAR_nozoom=SAR_nozoom(perm(desiredSpeaker))
+
+xtmp = cell2mat(x);
+[SDR,SIR,SAR,perm]=bss_eval_sources([y;y],xtmp(:,1:length(y)));
+% SDR=SDR(1)
+SIR=SIR(desiredSpeaker)
+% SAR=SAR(1)
 %% Output all results and records to the outputFolder
-OutputResult(outputFilePath,fs_output,srcFilePath,srcFileInd,srcType,DRR,testCase,x,y_rec,y);
+OutputResult(outputFilePath,fs_output,srcFilePath,srcFileInd,srcType,DRR,testCase,x,y_rec,y,desiredSpeaker);

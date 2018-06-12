@@ -1,5 +1,5 @@
 %The fuction stores the generated result to /Results
-function OutputResult(outputFilePath,Fs,srcFilePath,srcFileInd,srcType,DRR,testcase,x,y_rec,y)
+function OutputResult(outputFilePath,Fs,srcFilePath,srcFileInd,srcType,DRR,testcase,x,y_rec,y,desiredSpeaker)
 
 %Output the Original Source Signals in .wav files
 for i = 1:size(x,1)
@@ -14,10 +14,8 @@ for j = 1:size(y_rec,1)
 end
 
 %Output the Zoomed Signals in .wav files
-for j = 1:size(y,1)
-    fileName = ['zoomed' num2str(j) '.wav'];
-    audiowrite([outputFilePath,fileName],cell2mat(y(j)),Fs);
-end
+fileName = ['zoomed' num2str(desiredSpeaker) '.wav'];
+audiowrite([outputFilePath,fileName],y,Fs);
 
 %Output the Relevent Information to a text file
 fileID = fopen([outputFilePath,'resultinfo.txt'],'w');
