@@ -1,0 +1,24 @@
+\nomenclatureentry{aDOA@[{DOA}]\begingroup Direction of Arrival\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aTF@[{TF}]\begingroup Time-frequency\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aBSS@[{BSS}]\begingroup Blind Source Separation\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aTDOA@[{TDOA}]\begingroup Time Difference of Arrival\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aRT$_{60}$@[{RT$_{60}$}]\begingroup Reverberation Time\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aDRR@[{DRR}]\begingroup Direct-to-Reverberant Ratio\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aGSC@[{GSC}]\begingroup Generalised Sidelobe Canceller\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aFCM@[{FCM}]\begingroup Fuzzy $c$-means Clustering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aMUSHRA@[{MUSHRA}]\begingroup MUltiple Stimuli with Hidden Reference and Anchor\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSDR@[{SDR}]\begingroup Signal-to-Distortion Ratio\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSNR@[{SNR}]\begingroup Signal-to-Noise Ratio\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSIR@[{SIR}]\begingroup Source-to-Interference Ratio\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSAR@[{SAR}]\begingroup Sources-to-Artifacts Ratio\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aPESQ@[{PESQ}]\begingroup Perceptual Evaluation of Speech Quality\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSTOI@[{STOI}]\begingroup Short-time Objective Intelligibility\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aRIR@[{RIR}]\begingroup Room Impulse Response\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aLTI@[{LTI}]\begingroup Linear Time-invariant\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aDSB@[{DSB}]\begingroup Delay-Sum Beamformer\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aSTFT@[{STFT}]\begingroup Short-time Fourier Transform\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{awFCM@[{wFCM}]\begingroup Weighted Fuzzy $c$-means Clustering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{awCFCM@[{wCFCM}]\begingroup Weighted Contextual Fuzzy $c$-means Clustering\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aMVDR@[{MVDR}]\begingroup Minimum Variance Distortionless Response\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aMOS-LQO@[{MOS-LQO}]\begingroup Mean Opinion Score - Listening Quality Objective\nomeqref {0}|nompageref}{1}
+\nomenclatureentry{aDNN@[{DNN}]\begingroup Deep Neural Network\nomeqref {0}|nompageref}{1}

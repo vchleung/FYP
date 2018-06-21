@@ -1,0 +1,53 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{BSS}]\begingroup Blind Source Separation\nomeqref {0}
+		\nompageref{1}
+  \item [{DNN}]\begingroup Deep Neural Network\nomeqref {0}
+		\nompageref{1}
+  \item [{DOA}]\begingroup Direction of Arrival\nomeqref {0}
+		\nompageref{1}
+  \item [{DRR}]\begingroup Direct-to-Reverberant Ratio\nomeqref {0}
+		\nompageref{1}
+  \item [{DSB}]\begingroup Delay-Sum Beamformer\nomeqref {0}
+		\nompageref{1}
+  \item [{FCM}]\begingroup Fuzzy $c$-means Clustering\nomeqref {0}
+		\nompageref{1}
+  \item [{GSC}]\begingroup Generalised Sidelobe Canceller\nomeqref {0}
+		\nompageref{1}
+  \item [{LTI}]\begingroup Linear Time-invariant\nomeqref {0}
+		\nompageref{1}
+  \item [{MOS-LQO}]\begingroup Mean Opinion Score - Listening Quality Objective\nomeqref {0}
+		\nompageref{1}
+  \item [{MUSHRA}]\begingroup MUltiple Stimuli with Hidden Reference and Anchor\nomeqref {0}
+		\nompageref{1}
+  \item [{MVDR}]\begingroup Minimum Variance Distortionless Response\nomeqref {0}
+		\nompageref{1}
+  \item [{PESQ}]\begingroup Perceptual Evaluation of Speech Quality\nomeqref {0}
+		\nompageref{1}
+  \item [{RIR}]\begingroup Room Impulse Response\nomeqref {0}
+		\nompageref{1}
+  \item [{RT$_{60}$}]\begingroup Reverberation Time\nomeqref {0}
+		\nompageref{1}
+  \item [{SAR}]\begingroup Sources-to-Artifacts Ratio\nomeqref {0}
+		\nompageref{1}
+  \item [{SDR}]\begingroup Signal-to-Distortion Ratio\nomeqref {0}
+		\nompageref{1}
+  \item [{SIR}]\begingroup Source-to-Interference Ratio\nomeqref {0}
+		\nompageref{1}
+  \item [{SNR}]\begingroup Signal-to-Noise Ratio\nomeqref {0}
+		\nompageref{1}
+  \item [{STFT}]\begingroup Short-time Fourier Transform\nomeqref {0}
+		\nompageref{1}
+  \item [{STOI}]\begingroup Short-time Objective Intelligibility\nomeqref {0}
+		\nompageref{1}
+  \item [{TDOA}]\begingroup Time Difference of Arrival\nomeqref {0}
+		\nompageref{1}
+  \item [{TF}]\begingroup Time-frequency\nomeqref {0}\nompageref{1}
+  \item [{wCFCM}]\begingroup Weighted Contextual Fuzzy $c$-means Clustering\nomeqref {0}
+		\nompageref{1}
+  \item [{wFCM}]\begingroup Weighted Fuzzy $c$-means Clustering\nomeqref {0}
+		\nompageref{1}
+
+\end{thenomenclature}

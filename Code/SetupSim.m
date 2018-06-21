@@ -36,15 +36,15 @@ switch testcase
         srcOrientation = [-45 0 0;-135 0 0];      % Source orientation (rad)
     case 3
         %receiver (microphone) properties
-        recLoc = [(roomDim(1)-recSeparation)/2 0.3*roomDim(2) 1.6 ;...
-            (roomDim(1)+recSeparation)/2 0.3*roomDim(2) 1.6];    % Receiver positions [x_1 y_1 z_1 ; x_2 y_2 z_2] (m)
+        recLoc = [0.5*(roomDim(1)-recSeparation) 0.3*roomDim(2) 1.6 ; ...
+            0.5*(roomDim(1)+recSeparation) 0.3*roomDim(2) 1.6];    % Receiver positions [x_1 y_1 z_1 ; x_2 y_2 z_2] (m)
         recOrientation = [0 0 0; 0 0 0];      % Microphone orientation (rad)
         recType = ["omnidirectional"; "omnidirectional"];  % Type of microphone
         
         %source properties
-        srcLoc = [0.375*roomDim(1) 0.3*roomDim(2)+0.375*roomDim(1) 1.6;...
-            0.625*roomDim(1) 0.3*roomDim(2)+0.375*roomDim(1) 1.6];               % Source position [x y z] (m)
-        srcOrientation = [-90 0 0;-90 0 0];      % Source orientation (rad)
+        srcLoc = [0.15*roomDim(1) 0.3*roomDim(2)+0.35*roomDim(1) 1.6;...
+            0.85*roomDim(1) 0.3*roomDim(2)+0.35*roomDim(1) 1.6];              % Source position [x y z] (m)
+        srcOrientation = [-45 0 0;-135 0 0];      % Source orientation (rad)
     otherwise 
         error('Invalid Test Case');
 end

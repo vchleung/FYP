@@ -4,4 +4,4 @@ Test Case 2
       Directivity(Gender)                                                   malespeech                                                 femalespeech 
                     Index                                                           11                                                            8 
                      File              ../Data/IEEE sentences/male/16kHz/ieee02m01.dbl            ../Data/IEEE sentences/female/16kHz/ieee01f08.dbl 
-                  DRR(dB)                                                       128.35                                                       128.35 
+                  DRR(dB)                                                         7.93                                                         7.59 

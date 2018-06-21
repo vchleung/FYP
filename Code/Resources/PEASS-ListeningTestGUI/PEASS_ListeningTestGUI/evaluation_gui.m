@@ -40,7 +40,7 @@ uicontrol(fig,'Style','Text','Units','characters','Position',[3.5 14.79 19 1],'F
 uicontrol(fig,'Style','Text','Units','characters','Position',[3.5 12.43 19 1],'FontSize',10,'String','Bad','Tag','scale10');
 %save and proceed button
 results=uicontrol(fig,'Style','Pushbutton','Units','characters','FontSize',10,'Tag','results','Callback','evaluation_callbacks(''results'',guidata(gcbo))');
-if expe==nbexpe && q==1,
+if expe==nbexpe && currQuestion==length(questions),
     set(results,'Position',[width/2-9.5 1.5 19 1.8],'String','Save and exit');
 else,
     set(results,'Position',[width/2-12 1.5 24 1.8],'String','Save and proceed');

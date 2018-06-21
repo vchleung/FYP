@@ -4,13 +4,12 @@
 close all
 clearvars
 %addpath('Resources/export_fig')
-set(0,'defaultAxesFontSize',14) %Change the default axes size for figures
+set(0,'defaultAxesFontSize',12) %Change the default axes size for figures
 
 %Choose the input database for sources of anechoic speech
 numSrc = 2;
 numRec = 2;
 userInput = false;
-absorptionC = 1; %'default'/number in range of (0,1]
 srcFilePath = ["../Data/IEEE sentences/male/16kHz/ieee02m01.dbl"; "../Data/IEEE sentences/female/16kHz/ieee01f08.dbl"] ;
 srcType = ["malespeech"; "femalespeech"];
 srcFileInd = [11; 8];
@@ -22,16 +21,17 @@ end
 
 %Choose the test cases to implement
 testCase = 2;
-roomSize = 'Large';        
+roomSize = 'large';        
 outputFilePath = ['Results/TestCase' num2str(testCase) '-' roomSize '/' num2str(testCase) lower(roomSize(1)) '_']; %Specify the output file path
 desiredSpeaker = 1;
 recSeparation = 0.02;
+absorptionC = 0.75; %'default'/number in range of (0,1]
 
 %Choose which figures to be displayed
-pltImpRes = true;
+pltImpRes = false;
 pltImpResParams = struct('Receiver',[],'Source',[]);
-plt3D = true;
-pltRT60 = true;
+plt3D = false;
+pltRT60 = false;
 pltSchCur = false;
 
 %Specify the parameters for STFT Analysis
@@ -48,14 +48,14 @@ W=W/sqrt(sum(W(1:INC:N_window).^2));      % normalize window
 %Choose which method to implement:
 method = 'cluster'; %'cluster'/'beamforming'
 clusterMethod = 'wFCM'; %'naive'/'kmeans'/'FCM'/'wFCM'/'wcFCM'
-beamformingMethod = 'gsc_MATLAB'; %'delaysum'/'delaysum_MATLAB'/'gsc_MATLAB'
+beamformingMethod = 'delaysum_MATLAB'; %'delaysum'/'delaysum_MATLAB'/'gsc_MATLAB'/'mvdr_matlab'/'lcmv_matlab'/'null-steering'
+beamforming_fc = 340/(2*recSeparation);
 
 %% Simulate Room Impulse Response (RIR)
 %Define simulation parameters
 fs_room = 48000;            % Sample frequency (samples/s) used in MCRoomSim
 fs_output = 16000;          % Sample frequency (samples/s) used in Output RIR
 tsim = 5;
-deciRatio = fs_room/fs_output;
 order = [-1, -1, -1];       % -1 equals maximum reflection order!
 
 %Set up MCRoomSim Options
@@ -69,7 +69,7 @@ Options = MCRoomSimOptions('Fs',fs_room, ...
 %Plot a 3-D map for the display of source and receivers
 if plt3D
     PlotSimSetup(Sources,Receivers,Room);
-    title(sprintf('Test Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')))
+    title(sprintf('Case %d in %s Room', testCase, regexprep(lower(roomSize),'(\<[a-z])','${upper($1)}')))
     view(2);
     %print([outputFilePath,'\3DMap.png'],'-dpng');
     export_fig([outputFilePath,'lo'],'-eps','-png','-m2')
@@ -79,7 +79,7 @@ end
 RIR_orig = RunMCRoomSim(Sources,Receivers,Room,Options);
 
 %Downsample the impulse response from 48kHz to 16kHz
-RIR_deci = cellfun(@(x) resample(x,1,deciRatio),RIR_orig,'UniformOutput',false);
+RIR_deci = cellfun(@(x) resample(x,fs_output,fs_room),RIR_orig,'UniformOutput',false);
 
 %Normalise RIR to increase the audibility
 maxEnergyImpRes = max(max(cellfun(@norm,RIR_deci))); %Find the maximum energy amongst all the RIRs
@@ -95,13 +95,14 @@ end
 [DRR,~] = cellfun(@(h) EstDRR(h, fs_output),RIR_deci);
 
 %Plot the Reverberation time of the first receiver and first source
-[T30,~] = ReverberationTime(cell2mat(RIR_deci(1,1)),fs_output,'oct',pltRT60,pltSchCur);
+[RT60,~] = ReverberationTime(cell2mat(RIR_deci(1,1)),fs_output,'oct',pltRT60,pltSchCur);
+RT60 = mean(RT60)
 if pltRT60
     export_fig([outputFilePath,'rt60'],'-eps','-png','-m2')    
 end
 
 %% Filter the RIR with source samples to generate .wav outputs
-set(0,'defaultAxesFontSize',11) %Change the default axes size for figures
+set(0,'defaultAxesFontSize',12) %Change the default axes size for figures
 
 %Obtain the source samples
 x=cellfun(@DBLRead, srcFilePath,'UniformOutput',false);
@@ -110,7 +111,7 @@ x=cellfun(@DBLRead, srcFilePath,'UniformOutput',false);
 % Plot Sources' Spectrogram
 figure('pos',[150 300 900 300]);
 tmp=cellfun(@(S) rfft(enframe(S,W,INC),N_window,2),x,'UniformOutput',false);      % do STFT: one row per time frame, +ve frequencies only
-t = (1:size(tmp{1},1))/fs_output*INC;
+t = (0:size(tmp{1},1)-1)/fs_output*INC;
 f = (0:size(tmp{1},2)-1)/(size(tmp{1},2)-1)*fs_output/2;
 for i = 1:numSrc
    subplot(1,numSrc,i);
@@ -151,13 +152,13 @@ User_DOA = atan2d(User_DOA(:,2),User_DOA(:,1))-90;
 
 switch lower(method)
     case 'cluster'
-        F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC,desiredSpeaker);
+        F_output = PhaseClustering(F,clusterMethod,Receivers,numSrc,fs_output,INC,User_DOA(desiredSpeaker));
         % Overlap-add to recover each of the output signal
         y = overlapadd(irfft(F_output,N_window,2),W,INC);  % reconstitute the time waveform
         y = y';
         
     case 'beamforming'
-        y = Beamforming(y_rec,User_DOA(desiredSpeaker),Receivers,fs_output,beamformingMethod);
+        y = Beamforming(y_rec,User_DOA(desiredSpeaker),Receivers,fs_output,beamformingMethod,beamforming_fc);
 end
 
 %% Display the Spectrogram of the Zoomed Signal
@@ -166,40 +167,43 @@ Y_output=rfft(enframe(y,W,INC),N_window,2);      % do STFT: one row per time fra
 
 % Spectrogram of Processed Signal
 figure('pos',[150 300 400 300]);
-t = (1:size(Y_output,1))/fs_output*INC;
+t = (0:size(Y_output,1)-1)/fs_output*INC;
 f = (0:size(Y_output,2)-1)/(size(Y_output,2)-1)*fs_output/2;
-PlotSpectrogram(Y_output.*conj(Y_output),f,t,['Spectrogram of Recovered Source ' num2str(desiredSpeaker)],[-30 40]);
-
-%% Play the Signals 
-%First Source (Male)
-pause();
-sound(x{1},fs_output)
-%Second Source (Female)
-pause();
-sound(x{2},fs_output)
-%Mixture of Sources
-pause();
-sound(y_rec{1},fs_output)
-%Zoomed Signal
-pause();
-sound(y,fs_output)
+PlotSpectrogram(Y_output.*conj(Y_output),f,t,['Source ' num2str(desiredSpeaker) ' After Zooming'],[-30 40]);
 
 %% Evaluation Metrics
-pesq_nozoom = pesq_mex_fast_vec(x{1},y_rec{1}, fs_output, 'narrowband')
-pesq = pesq_mex_fast_vec(x{1},y, fs_output, 'narrowband')
+pesq_nozoom = pesq_mex_fast_vec(x{desiredSpeaker},y_rec{1}, fs_output, 'narrowband')
+pesq = pesq_mex_fast_vec(x{desiredSpeaker},y, fs_output, 'narrowband')
+pesq_gain = pesq-pesq_nozoom;
 
-stoi_nozoom = taal2011(x{1},y_rec{1}, fs_output)
-stoi = taal2011(x{1}(1:length(y)),y,fs_output)
+stoi_nozoom = taal2011(x{desiredSpeaker},y_rec{1}, fs_output)
+stoi = taal2011(x{desiredSpeaker}(1:length(y)),y,fs_output)
+stoi_gain = stoi-stoi_nozoom;
 
 [SDR_nozoom,SIR_nozoom,SAR_nozoom,perm]=bss_eval_sources(cell2mat(y_rec),cell2mat(x));
 % SDR_nozoom=SDR_nozoom(perm(desiredSpeaker))
-SIR_nozoom=SIR_nozoom(desiredSpeaker)
-% SAR_nozoom=SAR_nozoom(perm(desiredSpeaker))
+SIR_nozoom=SIR_nozoom(desiredSpeaker);
 
 xtmp = cell2mat(x);
 [SDR,SIR,SAR,perm]=bss_eval_sources([y;y],xtmp(:,1:length(y)));
 % SDR=SDR(1)
-SIR=SIR(desiredSpeaker)
-% SAR=SAR(1)
+SIR=max(SIR)
+SIR_gain = SIR-SIR_nozoom
+SAR=SAR(desiredSpeaker)
+
+%% Play the Signals 
+%First Source
+disp('Original Anechoic Speaker, Press any Button to Listen');
+pause();
+sound(x{desiredSpeaker},fs_output)
+%Mixture of Sources
+disp('Under reverberation with interference, Press any Button to Listen');
+pause();
+sound(y_rec{1},fs_output)
+%Zoomed Signal
+disp('After Audio Zoom, Press any Button to Listen');
+pause();
+sound(y,fs_output)
+
 %% Output all results and records to the outputFolder
 OutputResult(outputFilePath,fs_output,srcFilePath,srcFileInd,srcType,DRR,testCase,x,y_rec,y,desiredSpeaker);

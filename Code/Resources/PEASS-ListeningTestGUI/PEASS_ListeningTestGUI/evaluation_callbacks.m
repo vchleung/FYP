@@ -124,7 +124,7 @@ if ~isempty(myAudioPlayer)
         stop(myAudioPlayer);
     end
 end
-[x fs] = wavread(s);
+[x fs] = audioread(s);
 myAudioPlayer = audioplayer(x,fs);
 play(myAudioPlayer);
 

@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2016/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: main.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: Mendeley.bib
+Database file #2: style.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+** IEEEtran BST control entry "IEEEexample:BSTcontrol" detected.
+Warning--empty year in JourjineBlindMixtures
+Warning--empty year in RixPerceptualCodecs
+
+Done.
+You've used 54 entries,
+            4087 wiz_defined-function locations,
+            1173 strings with 18730 characters,
+and the built_in function-call counts, 40310 in all, are:
+= -- 3335
+> -- 855
+< -- 379
++ -- 482
+- -- 132
+* -- 1909
+:= -- 6013
+add.period$ -- 114
+call.type$ -- 54
+change.case$ -- 51
+chr.to.int$ -- 864
+cite$ -- 56
+duplicate$ -- 2895
+empty$ -- 3178
+format.name$ -- 170
+if$ -- 9402
+int.to.chr$ -- 0
+int.to.str$ -- 53
+missing$ -- 474
+newline$ -- 192
+num.names$ -- 53
+pop$ -- 1055
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 4
+skip$ -- 3132
+stack$ -- 0
+substring$ -- 2080
+swap$ -- 2432
+text.length$ -- 91
+text.prefix$ -- 0
+top$ -- 6
+type$ -- 54
+warning$ -- 2
+while$ -- 196
+width$ -- 55
+write$ -- 541
+(There were 2 warnings)

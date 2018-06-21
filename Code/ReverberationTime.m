@@ -1,8 +1,8 @@
-function [T30,frq] = ReverberationTime(ImpRsp,smpFrq,bndOpt,pltT30,pltSchCur)
+function [RT60,frq] = ReverberationTime(ImpRsp,smpFrq,bndOpt,pltT30,pltSchCur)
 %
-% [T30,frq] = ReverberationTime(ImpRsp,smpFrq,bndOpt,pltT30,pltSchCur)
+% [RT60,frq] = ReverberationTime(ImpRsp,smpFrq,bndOpt,pltT30,pltSchCur)
 %
-% Calculate the reverberation times (T30) from a set of impulse responses.
+% Calculate the reverberation times RT60 from a set of impulse responses.
 %
 % Input: - ImpRsp is an impulse reponse ([Nx1] vector) or array of impulse
 %          responses ([NxM] matrix).
@@ -66,7 +66,7 @@ nmbFrq = length(frq) ;
 clr = lines(nmbImp) ;
 
 % Initialise the output
-T30 = zeros(nmbFrq,nmbImp) ;
+RT60 = zeros(nmbFrq,nmbImp) ;
 
 % Create a new figure for the Schroeder curves
 if pltSchCur == true
@@ -111,7 +111,7 @@ for J = 1 : nmbImp
         end
         
         % T30
-        T30(I,J) = -60/coe(1) ;
+        RT60(I,J) = -60/coe(1) ;
                 
     end
     
@@ -120,7 +120,7 @@ end
 % Plot the T30s
 if pltT30 == true
     figure('color','white')
-    semilogx(frq,2*T30,'-o','linewidth',2)
+    semilogx(frq,RT60,'-o','linewidth',2)
     xlim([frq(1)*2^(-1/3) frq(end)*2^(1/3)])
     title('Reverberation time (RT60)') ;
     xlabel('Frequency [Hz]')

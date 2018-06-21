@@ -1,0 +1,94 @@
+\contentsline {section}{List of Figures}{v}{Doc-Start}
+\contentsline {section}{List of Tables}{vi}{Doc-Start}
+\contentsline {section}{List of Abbreviations}{vii}{Doc-Start}
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Scope and Aims}{2}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Project Breakdown and Requirements Capture}{3}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Report Structure}{3}{subsection.1.3}
+\contentsline {section}{\numberline {2}Theoretical Background}{5}{section.2}
+\contentsline {subsection}{\numberline {2.1}Key Technical Assumptions}{5}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Physical Limitation of Microphone Arrays in Smartphones}{5}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Sparsity Assumption}{6}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Narrowband Assumption}{7}{subsubsection.2.1.3}
+\contentsline {subsection}{\numberline {2.2}Simulating Room Acoustics}{7}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Reverberation}{7}{subsubsection.2.2.1}
+\contentsline {paragraph}{\numberline {2.2.1.1}Reverberation time (RT$_{60}$)}{8}{paragraph.2.2.1.1}
+\contentsline {paragraph}{\numberline {2.2.1.2}Direct-To-Reverberant Ratio (DRR)}{9}{paragraph.2.2.1.2}
+\contentsline {subsubsection}{\numberline {2.2.2}Modelling a Room}{9}{subsubsection.2.2.2}
+\contentsline {paragraph}{\numberline {2.2.2.1}Room as a Linear Time-invariant (LTI) System}{9}{paragraph.2.2.2.1}
+\contentsline {paragraph}{\numberline {2.2.2.2}Simulating Room Impulse Response}{10}{paragraph.2.2.2.2}
+\contentsline {subsection}{\numberline {2.3}Processing Algorithms}{11}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Beamforming}{11}{subsubsection.2.3.1}
+\contentsline {subsubsection}{\numberline {2.3.2}Blind Source Separation using Time-frequency Masks}{13}{subsubsection.2.3.2}
+\contentsline {subsubsection}{\numberline {2.3.3}Subband Estimation of Time Difference of Arrival (TDOA) using Generalized Cross-Correlation with Phase Transform (GCC-PHAT)}{14}{subsubsection.2.3.3}
+\contentsline {subsection}{\numberline {2.4}Evaluation Metrics}{15}{subsection.2.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Speech Intelligibility}{15}{subsubsection.2.4.1}
+\contentsline {paragraph}{\numberline {2.4.1.1}Estimation using Objective Tests}{15}{paragraph.2.4.1.1}
+\contentsline {subsubsection}{\numberline {2.4.2}Speech Quality}{16}{subsubsection.2.4.2}
+\contentsline {paragraph}{\numberline {2.4.2.1}Estimation using Objective Tests}{16}{paragraph.2.4.2.1}
+\contentsline {paragraph}{\numberline {2.4.2.2}Measurement using Subjective Tests}{17}{paragraph.2.4.2.2}
+\contentsline {section}{\numberline {3}Simulating Audio Data}{19}{section.3}
+\contentsline {subsection}{\numberline {3.1}Capturing Anechoic Audio Data}{19}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Generating Room Impulse Response (RIR)}{19}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Requirements}{19}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Software Candidates}{19}{subsubsection.3.2.2}
+\contentsline {subsubsection}{\numberline {3.2.3}Baseline Testing}{20}{subsubsection.3.2.3}
+\contentsline {paragraph}{\numberline {3.2.3.1}Reverberation Time (RT$_{60}$)}{20}{paragraph.3.2.3.1}
+\contentsline {paragraph}{\numberline {3.2.3.2}Speaker-Microphone Layout}{21}{paragraph.3.2.3.2}
+\contentsline {subsection}{\numberline {3.3}Results}{24}{subsection.3.3}
+\contentsline {section}{\numberline {4}Algorithmic Development}{26}{section.4}
+\contentsline {subsection}{\numberline {4.1}Beamforming}{26}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {4.1.1}Motivation}{26}{subsubsection.4.1.1}
+\contentsline {subsubsection}{\numberline {4.1.2}Delay-Sum Beamformer (DSB)}{26}{subsubsection.4.1.2}
+\contentsline {paragraph}{\numberline {4.1.2.1}Array Pattern}{26}{paragraph.4.1.2.1}
+\contentsline {paragraph}{\numberline {4.1.2.2}Results}{27}{paragraph.4.1.2.2}
+\contentsline {subsubsection}{\numberline {4.1.3}Linear Constraint Minimum Variance (LCMV) Beamformer}{29}{subsubsection.4.1.3}
+\contentsline {paragraph}{\numberline {4.1.3.1}Problem Formulation}{29}{paragraph.4.1.3.1}
+\contentsline {paragraph}{\numberline {4.1.3.2}Minimum Variance Distortionless Response (MVDR) Beamformer}{30}{paragraph.4.1.3.2}
+\contentsline {paragraph}{\numberline {4.1.3.3}Generalised Sidelobe Canceller (GSC)}{31}{paragraph.4.1.3.3}
+\contentsline {subsubsection}{\numberline {4.1.4}Summary}{32}{subsubsection.4.1.4}
+\contentsline {subsection}{\numberline {4.2}Time-frequency Mask Estimation through Clustering of Phase Differences}{32}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Motivation}{32}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}Baseline Testing using Naive Binary Mask}{33}{subsubsection.4.2.2}
+\contentsline {paragraph}{\numberline {4.2.2.1}Separation of Microphone $d$}{34}{paragraph.4.2.2.1}
+\contentsline {paragraph}{\numberline {4.2.2.2}Results}{35}{paragraph.4.2.2.2}
+\contentsline {subsubsection}{\numberline {4.2.3}$k$-means Clustering}{36}{subsubsection.4.2.3}
+\contentsline {paragraph}{\numberline {4.2.3.1}Data Formulation}{37}{paragraph.4.2.3.1}
+\contentsline {paragraph}{\numberline {4.2.3.2}Forming the clusters}{37}{paragraph.4.2.3.2}
+\contentsline {paragraph}{\numberline {4.2.3.3}Cluster Labelling}{37}{paragraph.4.2.3.3}
+\contentsline {paragraph}{\numberline {4.2.3.4}Result}{37}{paragraph.4.2.3.4}
+\contentsline {subsubsection}{\numberline {4.2.4}Soft mask using Fuzzy $c$-means Clustering (FCM)}{38}{subsubsection.4.2.4}
+\contentsline {paragraph}{\numberline {4.2.4.1}Results}{39}{paragraph.4.2.4.1}
+\contentsline {subsubsection}{\numberline {4.2.5}Weighted Fuzzy $c$-means Clustering (wFCM)}{40}{subsubsection.4.2.5}
+\contentsline {paragraph}{\numberline {4.2.5.1}Variance}{41}{paragraph.4.2.5.1}
+\contentsline {paragraph}{\numberline {4.2.5.2}Signal-to-Noise Ratio (SNR)}{41}{paragraph.4.2.5.2}
+\contentsline {paragraph}{\numberline {4.2.5.3}Results}{42}{paragraph.4.2.5.3}
+\contentsline {subsubsection}{\numberline {4.2.6}Weighted Contextual Fuzzy $c$-means Clustering (wCFCM)}{43}{subsubsection.4.2.6}
+\contentsline {paragraph}{\numberline {4.2.6.1}Results}{44}{paragraph.4.2.6.1}
+\contentsline {subsubsection}{\numberline {4.2.7}Limitations}{44}{subsubsection.4.2.7}
+\contentsline {paragraph}{\numberline {4.2.7.1}Estimating the Number of Speakers}{44}{paragraph.4.2.7.1}
+\contentsline {paragraph}{\numberline {4.2.7.2}Vulnerability to Initialisation}{45}{paragraph.4.2.7.2}
+\contentsline {subsubsection}{\numberline {4.2.8}Summary}{45}{subsubsection.4.2.8}
+\contentsline {subsection}{\numberline {4.3}Time-frequency Mask Estimation through Machine Learning}{46}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}Motivation}{46}{subsubsection.4.3.1}
+\contentsline {subsubsection}{\numberline {4.3.2}Neural Networks}{46}{subsubsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.3}Features Extraction}{47}{subsubsection.4.3.3}
+\contentsline {paragraph}{\numberline {4.3.3.1}Monaural Features}{47}{paragraph.4.3.3.1}
+\contentsline {paragraph}{\numberline {4.3.3.2}Binaural Features}{47}{paragraph.4.3.3.2}
+\contentsline {subsubsection}{\numberline {4.3.4}Proposed Framework}{48}{subsubsection.4.3.4}
+\contentsline {section}{\numberline {5}Evaluation}{49}{section.5}
+\contentsline {subsection}{\numberline {5.1}Estimating Speech Intelligibility using Objective Test}{49}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Estimating Speech Quality using Objective Tests}{49}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Measuring Speech Quality through Subjective Listening Test}{50}{subsection.5.3}
+\contentsline {section}{\numberline {6}Project Management}{53}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{55}{section.7}
+\contentsline {subsection}{\numberline {7.1}Future Works}{55}{subsection.7.1}
+\contentsline {subsubsection}{\numberline {7.1.1}Project Scope}{55}{subsubsection.7.1.1}
+\contentsline {subsubsection}{\numberline {7.1.2}Processing Algorithms}{56}{subsubsection.7.1.2}
+\contentsline {subsubsection}{\numberline {7.1.3}Evaluation Metrics}{56}{subsubsection.7.1.3}
+\contentsline {section}{References}{57}{subsubsection.7.1.3}
+\setcounter {tocdepth}{1}
+\contentsline {section}{Appendix \numberline {A}Results of Baseline Testing of Synthetic Audio Data}{62}{Appendix.a.A}
+\contentsline {section}{Appendix \numberline {B}Code Listing}{65}{Appendix.a.B}
+\contentsline {subsection}{\numberline {B.1}Beamforming}{65}{subsection.a.B.1}
+\contentsline {subsection}{\numberline {B.2}Time-frequency Masking through Clustering}{67}{subsection.a.B.2}

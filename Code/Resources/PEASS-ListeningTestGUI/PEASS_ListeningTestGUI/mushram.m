@@ -151,7 +151,7 @@ if phase,
 %         'rate the quality in terms of level of artifacts in each test signal';...
 %         'give a global quality rate for each test signal '};
     fig=evaluation_gui(nbfile,1,nbexpe);
-    if ~fig,
+    if isempty(fig),
         errordlg('There are too many test files to display. Try increasing the resolution of the screen.','Error');
         return;
     end
@@ -168,7 +168,7 @@ else,
     %%%opening the GUI for the training phase
     %opening the GUI
     fig=training_gui(nbfile,nbexpe,run_all);
-    if ~fig,
+    if isempty(fig),
         errordlg('There are too many experiments or too many test files to display. Try increasing the resolution of the screen.','Error');
         return;
     end
