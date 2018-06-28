@@ -109,7 +109,7 @@ switch lower(clusterMethod)
         end
         w = max(w,K);
         w = 1+1./w;
-%          w = min(SNR,SNRmax); %SNR weighted
+          w = min(SNR,SNRmax); %SNR weighted
         w = reshape(w,[],1);
         timeDiff_reshaped_norm = reshape(timeDiff_complex_norm,[],1);
         
